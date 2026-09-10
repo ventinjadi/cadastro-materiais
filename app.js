@@ -7,7 +7,7 @@ function enhanceUi(){
   document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="custom.css">');
   document.title='Meu Almoxarifado';
   document.querySelector('link[rel="icon"]').href='app-icon.png';
-  document.querySelector('.mark').outerHTML='<img class="brand-logo" src="logo-app.png" alt="Meu Almoxarifado">';
+  document.querySelector('.mark').outerHTML='<img class="brand-logo" src="logo-app-sumai-ufba-v2.png" alt="Meu Almoxarifado SUMAI/UFBA">';
   document.querySelector('.brand h1').hidden=true;
   const initialIcon=document.querySelector('#welcome .welcome-icon');if(initialIcon)initialIcon.outerHTML='<img src="app-icon.png" alt="" style="width:78px;height:78px;border-radius:24px">';
   const initialTitle=document.querySelector('#welcome h2');if(initialTitle)initialTitle.textContent='Meu Almoxarifado';
