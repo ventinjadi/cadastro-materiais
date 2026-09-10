@@ -1,5 +1,5 @@
-const CACHE='materiais-v9';
-const ASSETS=['./','index.html','styles.css','app.js','manifest.webmanifest','icon.svg'];
+const CACHE='materiais-v10';
+const ASSETS=['./','index.html','styles.css','custom.css','app.js','manifest.webmanifest','icon.svg','logo-sumai.png'];
 self.addEventListener('install',event=>{
   self.skipWaiting();
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));

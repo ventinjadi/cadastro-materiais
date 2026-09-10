@@ -4,6 +4,8 @@ const $=id=>document.getElementById(id);
 document.addEventListener('DOMContentLoaded',()=>{enhanceUi();bind();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});if(state.token)bootstrap()});
 
 function enhanceUi(){
+  document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="custom.css">');
+  document.querySelector('.mark').outerHTML='<img class="brand-logo" src="logo-sumai.png" alt="UFBA SUMAI">';
   $('connectBtn').textContent='Entrar';
   $('description').closest('.field').insertAdjacentHTML('beforebegin','<div class="field"><label for="quantity">Quantidade <b>*</b></label><input id="quantity" type="number" inputmode="numeric" min="1" step="1" value="1" required></div>');
   $('description').closest('.field').insertAdjacentHTML('afterend','<div class="field"><label for="location">Local <b>*</b></label><select id="location" required><option value="">Selecione</option><option>Almoxarifado 1</option><option>Almoxarifado 2</option><option>Outro</option></select></div><div id="otherLocationField" class="field" hidden><label for="otherLocation">Qual local? <b>*</b></label><input id="otherLocation" maxlength="160" placeholder="Digite o local"></div>');

@@ -1,0 +1,4 @@
+.bar{justify-content:flex-end;flex-wrap:wrap;gap:10px}
+.brand{min-width:0}
+.brand-logo{width:145px;height:48px;object-fit:contain;object-position:left center;flex:none}
+@media(max-width:760px){.brand{width:100%}.brand-logo{width:132px;height:44px}.bar>button{min-height:42px;padding-left:12px;padding-right:12px}}
