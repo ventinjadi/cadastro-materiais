@@ -1,9 +1,10 @@
-const CONFIG={clientId:'537537688710-m7b8s8ols1ufbcoj1a0oce57hutsq2u6.apps.googleusercontent.com',scope:'openid email profile',api:'https://cadastro-materiais-api.ventinjadi.workers.dev'};
+const CONFIG={clientId:'537537688710-m7b8s8ols1ufbcoj1a0oce57hutsq2u6.apps.googleusercontent.com',scope:'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',api:'https://cadastro-materiais-api.ventinjadi.workers.dev'};
 const state={token:'',user:null,items:[],editing:null,photoBlob:null,photoName:'',previewUrl:'',photoUrls:new Map()};
 const $=id=>document.getElementById(id);
 document.addEventListener('DOMContentLoaded',()=>{enhanceUi();bind();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})});
 
 function enhanceUi(){
+  $('connectBtn').textContent='Entrar';
   $('description').closest('.field').insertAdjacentHTML('beforebegin','<div class="field"><label for="quantity">Quantidade <b>*</b></label><input id="quantity" type="number" inputmode="numeric" min="1" step="1" value="1" required></div>');
   $('newBtn').insertAdjacentHTML('beforebegin','<button id="adminBtn" class="ghost" hidden>Usuários</button>');
   document.body.insertAdjacentHTML('beforeend','<dialog id="adminDialog"><section class="modal"><div class="modalhead"><h2>Solicitações de acesso</h2><button id="closeAdmin" class="close">×</button></div><div id="usersList" class="fields"></div></section></dialog>');
@@ -11,7 +12,7 @@ function enhanceUi(){
 function bind(){['connectBtn','welcomeConnect'].forEach(id=>$(id).onclick=connectGoogle);$('newBtn').onclick=()=>openForm();$('adminBtn').onclick=openAdmin;$('closeAdmin').onclick=()=>$('adminDialog').close();$('closeBtn').onclick=$('cancelBtn').onclick=closeForm;$('search').oninput=render;$('filter').onchange=render;$('hasNc').onchange=toggleNc;$('photo').onchange=handlePhoto;$('form').onsubmit=submitForm;$('deleteBtn').onclick=removeCurrent}
 
 function connectGoogle(){if(!window.google?.accounts?.oauth2)return toast('O login Google ainda está carregando.');google.accounts.oauth2.initTokenClient({client_id:CONFIG.clientId,scope:CONFIG.scope,callback:async r=>{if(r.error)return toast('Não foi possível entrar com o Google.');state.token=r.access_token;await bootstrap()}}).requestAccessToken({prompt:''})}
-async function api(path,options={}){const res=await fetch(CONFIG.api+path,{...options,headers:{Authorization:'Bearer '+state.token,...(options.headers||{})}});const type=res.headers.get('content-type')||'';if(res.status===401){state.token='';showLogin();throw new Error('Sua sessão expirou. Entre novamente.')}if(!res.ok){const data=type.includes('json')?await res.json().catch(()=>({})):{};throw new Error(data.error||'Não foi possível concluir a operação.')}return res}
+async function api(path,options={}){const res=await fetch(CONFIG.api+path,{...options,headers:{Authorization:'Bearer '+state.token,...(options.headers||{})}});const type=res.headers.get('content-type')||'';if(!res.ok){const data=type.includes('json')?await res.json().catch(()=>({})):{};if(res.status===401){state.token='';showLogin()}throw new Error(data.error||(res.status===401?'Sua sessão expirou. Entre novamente.':'Não foi possível concluir a operação.'))}return res}
 async function bootstrap(){setStatus('Verificando seu acesso…');try{const me=await(await api('/me')).json();state.user=me;if(me.status==='approved'){await loadMaterials();showWorkspace();if(me.email==='ventinjadi@gmail.com')$('adminBtn').hidden=false}else showAccessState(me.status)}catch(e){toast(e.message);showLogin()}}
 async function loadMaterials(){const data=await(await api('/materials')).json();state.items=data.materials||[];state.user=data.user||state.user;render()}
 
