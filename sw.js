@@ -1,4 +1,4 @@
-const CACHE='materiais-v7';
+const CACHE='materiais-v8';
 const ASSETS=['./','index.html','styles.css','app.js','manifest.webmanifest','icon.svg'];
 self.addEventListener('install',event=>{
   self.skipWaiting();
