@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded',()=>{enhanceUi();bind();if('service
 
 function enhanceUi(){
   document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="custom.css">');
-  document.querySelector('.mark').outerHTML='<img class="brand-logo" src="logo-sumai.png" alt="UFBA SUMAI">';
+  document.title='Meu Almoxarifado';
+  document.querySelector('link[rel="icon"]').href='app-icon.png';
+  document.querySelector('.mark').outerHTML='<img class="brand-logo" src="logo-app.png" alt="Meu Almoxarifado">';
+  document.querySelector('.brand h1').hidden=true;
+  const initialIcon=document.querySelector('#welcome .welcome-icon');if(initialIcon)initialIcon.outerHTML='<img src="app-icon.png" alt="" style="width:78px;height:78px;border-radius:24px">';
+  const initialTitle=document.querySelector('#welcome h2');if(initialTitle)initialTitle.textContent='Meu Almoxarifado';
   $('connectBtn').textContent='Entrar';
   $('description').closest('.field').insertAdjacentHTML('beforebegin','<div class="field"><label for="quantity">Quantidade <b>*</b></label><input id="quantity" type="number" inputmode="numeric" min="1" step="1" value="1" required></div>');
   $('description').closest('.field').insertAdjacentHTML('afterend','<div class="field"><label for="location">Local <b>*</b></label><select id="location" required><option value="">Selecione</option><option>Almoxarifado 1</option><option>Almoxarifado 2</option><option>Outro</option></select></div><div id="otherLocationField" class="field" hidden><label for="otherLocation">Qual local? <b>*</b></label><input id="otherLocation" maxlength="160" placeholder="Digite o local"></div>');
@@ -21,7 +26,7 @@ async function bootstrap(){setStatus('Verificando seu acesso…');try{const me=a
 async function loadMaterials(){const data=await(await api('/materials')).json();state.items=data.materials||[];state.user=data.user||state.user;render()}
 
 function showWorkspace(){const canEdit=state.user.role==='editor';$('welcome').hidden=true;$('workspace').hidden=false;$('connectBtn').hidden=true;$('newBtn').hidden=!canEdit;$('exportBtn').hidden=false;setStatus(`${state.user.name} • ${canEdit?'editor':'somente leitura'}`)}
-function showLogin(){$('welcome').hidden=false;$('workspace').hidden=true;$('connectBtn').hidden=false;$('newBtn').hidden=true;$('adminBtn').hidden=true;$('exportBtn').hidden=true;$('welcome').innerHTML='<div class="welcome-icon">▦</div><h2>Seu cadastro de materiais</h2><p>Entre com sua conta Google para acessar.</p><button id="welcomeConnect" class="primary wide">Entrar com Google</button><small>Os materiais ficam no Drive da administradora.</small>';$('welcomeConnect').onclick=connectGoogle;setStatus('Entre com sua conta Google')}
+function showLogin(){$('welcome').hidden=false;$('workspace').hidden=true;$('connectBtn').hidden=false;$('newBtn').hidden=true;$('adminBtn').hidden=true;$('exportBtn').hidden=true;$('welcome').innerHTML='<img src="app-icon.png" alt="" style="width:78px;height:78px;border-radius:24px"><h2>Meu Almoxarifado</h2><p>Entre com sua conta Google para acessar.</p><button id="welcomeConnect" class="primary wide">Entrar com Google</button><small>Os materiais ficam no Drive da administradora.</small>';$('welcomeConnect').onclick=connectGoogle;setStatus('Entre com sua conta Google')}
 function showAccessState(status){$('welcome').hidden=false;$('workspace').hidden=true;$('connectBtn').hidden=true;$('newBtn').hidden=true;const pending=status==='pending';$('welcome').innerHTML=`<div class="welcome-icon">${pending?'⌛':'+'}</div><h2>${pending?'Acesso aguardando aprovação':'Solicitar acesso'}</h2><p>${pending?'Sua solicitação foi enviada. Assim que Jadi aprovar, você poderá acessar a lista de materiais.':'Envie uma solicitação para acessar e modificar a lista compartilhada.'}</p>${pending?'':'<button id="requestAccess" class="primary wide">Solicitar acesso</button>'}<small>${esc(state.user.email)}</small>`;if(!pending)$('requestAccess').onclick=requestAccess;setStatus(state.user.name)}
 async function requestAccess(){const b=$('requestAccess');b.disabled=true;b.textContent='Enviando…';try{const data=await(await api('/access-request',{method:'POST'})).json();showAccessState(data.status);toast('Solicitação enviada.')}catch(e){toast(e.message);b.disabled=false;b.textContent='Solicitar acesso'}}
 

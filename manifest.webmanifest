@@ -1,1 +1,1 @@
-{"name":"Cadastro de Materiais","short_name":"Materiais","start_url":"./","display":"standalone","background_color":"#f3f6fa","theme_color":"#253a57","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{"name":"Meu Almoxarifado","short_name":"Almoxarifado","start_url":"./","display":"standalone","background_color":"#f3f6fa","theme_color":"#253a57","icons":[{"src":"app-icon.png","sizes":"1254x1254","type":"image/png","purpose":"any maskable"}]}
