@@ -1,4 +1,4 @@
-const CONFIG={clientId:'258062603647-ut2jp2jausb1e65q279m3e0um0gg24ag.apps.googleusercontent.com',scope:'https://www.googleapis.com/auth/drive.appdata',dbName:'materiais-database.json'};
+const CONFIG={clientId:'537537688710-m7b8s8ols1ufbcoj1a0oce57hutsq2u6.apps.googleusercontent.com',scope:'https://www.googleapis.com/auth/drive.appdata',dbName:'materiais-database.json'};
 const state={token:'',dbFileId:'',items:[],editing:null,photoData:'',photoName:'',photoUrls:new Map()};
 const $=id=>document.getElementById(id);
 document.addEventListener('DOMContentLoaded',()=>{bind();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})});
