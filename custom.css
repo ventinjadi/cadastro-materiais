@@ -2,4 +2,14 @@
 .brand{min-width:0}
 .brand-logo{width:310px;height:78px;object-fit:contain;object-position:left center;flex:none}
 .storage-position{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.requests-box{border:1px solid var(--line);border-radius:16px;padding:14px;background:#f8fafc}
+.requests-head,.request-row-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.requests-head small{display:block;color:var(--muted);margin-top:3px}
+#requestsList{display:grid;gap:12px;margin-top:12px}
+.request-row{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.request-grid{display:grid;grid-template-columns:1.2fr .65fr 1fr;gap:10px;margin-top:10px}
+.compact{padding:7px 10px;font-size:.78rem}
+.request-summary{display:grid;gap:4px;margin-top:10px;color:var(--muted);font-size:.82rem}
+.request-summary span{display:block}
+@media(max-width:650px){.request-grid{grid-template-columns:1fr}.requests-head{align-items:flex-start;flex-direction:column}.requests-head button{width:100%}}
 @media(max-width:760px){.brand{width:100%}.brand-logo{width:230px;height:62px}.bar>button{min-height:42px;padding-left:12px;padding-right:12px}.storage-position{grid-template-columns:1fr}}

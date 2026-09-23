@@ -1,4 +1,4 @@
-const CACHE='materiais-v15';
+const CACHE='materiais-v16';
 const ASSETS=['./','index.html','styles.css','custom.css','app.js','manifest.webmanifest','app-icon.png','logo-app-sumai-ufba-v2.png'];
 self.addEventListener('install',event=>{
   self.skipWaiting();
