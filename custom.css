@@ -12,10 +12,17 @@
 .compact{padding:7px 10px;font-size:.78rem}
 .request-summary{display:grid;gap:4px;margin-top:10px;color:var(--muted);font-size:.82rem}
 .request-summary span{display:block}
-.chip.category{background:#e9f7df;color:#397a12}
+.category-field{border:1px solid var(--line);border-radius:16px;padding:14px;margin:0;background:#f8fafc}
+.category-field legend{font-weight:750;font-size:.86rem;padding:0 5px}.category-field legend b{color:var(--danger)}.category-field legend small{font-weight:500;color:var(--muted);margin-left:5px}
+.category-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+.category-options label{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;font-size:.88rem;font-weight:650}
+.category-options input{width:18px;height:18px;margin:0;accent-color:var(--navy)}
+.area-dot,.chip.category i{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none;border:1px solid #0002}
+.area-dot.climatizacao,.chip.category.climatizacao i{background:#e53935}.area-dot.eletrica,.chip.category.eletrica i{background:#222}.area-dot.hidraulica,.chip.category.hidraulica i{background:#2674d9}.area-dot.telhadista,.chip.category.telhadista i{background:#35a844}.area-dot.pintura,.chip.category.pintura i{background:#8b96a6}.area-dot.vidracaria,.chip.category.vidracaria i{background:#fff;border-color:#9aa4b2}.area-dot.serralheria,.chip.category.serralheria i{background:#8e44ad}.area-dot.carpintaria,.chip.category.carpintaria i{background:#8b5a3c}.area-dot.pedreiro,.chip.category.pedreiro i{background:#f3c623}.area-dot.outros,.chip.category.outros i{background:#f28c28}
+.chip.category{display:inline-flex;align-items:center;gap:5px;background:#f4f6f8;color:#344054;border:1px solid #e1e5eb}.chip.category.uncategorized{color:var(--muted)}
 .view-only .upload{cursor:default}
 .view-only .upload>div:last-of-type{display:none}
 .view-only input:disabled,.view-only textarea:disabled,.view-only select:disabled{opacity:1;color:var(--ink);-webkit-text-fill-color:var(--ink);background:#f8fafc;cursor:default}
 .view-only .field b{display:none}
-@media(max-width:650px){.tools{grid-template-columns:1fr}.request-grid{grid-template-columns:1fr}.requests-head{align-items:flex-start;flex-direction:column}.requests-head button{width:100%}}
+@media(max-width:650px){.tools{grid-template-columns:1fr}.category-options{grid-template-columns:1fr}.request-grid{grid-template-columns:1fr}.requests-head{align-items:flex-start;flex-direction:column}.requests-head button{width:100%}}
 @media(max-width:760px){.brand{width:100%}.brand-logo{width:230px;height:62px}.bar>button{min-height:42px;padding-left:12px;padding-right:12px}.storage-position{grid-template-columns:1fr}}
