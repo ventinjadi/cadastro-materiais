@@ -18,20 +18,22 @@ function enhanceUi(){
   $('newBtn').insertAdjacentHTML('beforebegin','<button id="adminBtn" class="ghost" hidden>Usuários</button>');
   $('adminBtn').insertAdjacentHTML('beforebegin','<button id="exportBtn" class="ghost" hidden>Excel</button>');
   document.body.insertAdjacentHTML('beforeend','<dialog id="adminDialog"><section class="modal"><div class="modalhead"><h2>Solicitações de acesso</h2><button id="closeAdmin" class="close">×</button></div><div id="usersList" class="fields"></div></section></dialog>');
-  // Visualizacao das fotos para usuarios aprovados (leitores e editores).
-  document.head.insertAdjacentHTML('beforeend',`<style>
-    .card .photo img, #preview img {cursor:zoom-in}
-    #photoLightbox {border:0;padding:0;background:transparent;max-width:100vw;max-height:100dvh;overflow:visible}
-    #photoLightbox::backdrop {background:rgba(8,16,28,.88)}
-    #photoLightbox .photo-lightbox-body {position:relative;display:flex;align-items:center;justify-content:center;width:min(96vw,1400px);height:92dvh}
-    #photoLightbox .photo-lightbox-image {display:block;max-width:100%;max-height:88dvh;object-fit:contain;border-radius:8px}
-    #photoLightbox .photo-lightbox-close {position:absolute;top:6px;right:6px;z-index:2;border:0;border-radius:50%;width:42px;height:42px;background:#fff;color:#142033;cursor:pointer;font-size:28px;line-height:1}
+  // Visualizador modal nativo: aparece inclusive sobre o dialog de detalhes.
+  document.head.insertAdjacentHTML('beforeend', `<style>
+    .card .photo img, #preview img {cursor:zoom-in;touch-action:manipulation}
+    #photoLightbox:not([open]) {display:none !important}
+    #photoLightbox {position:fixed;inset:0;margin:0;width:100vw;height:100vh;height:100dvh;max-width:none;max-height:none;border:0;background:rgba(8,16,28,.96);box-sizing:border-box;padding:64px 12px 20px;overflow:hidden}
+    #photoLightbox[open] {display:flex;align-items:center;justify-content:center}
+    #photoLightbox::backdrop {background:rgba(8,16,28,.96)}
+    #photoLightbox .photo-lightbox-image {max-width:100%;max-height:calc(100vh - 95px);max-height:calc(100dvh - 95px);width:auto;height:auto;object-fit:contain;border-radius:8px}
+    #photoLightbox .photo-lightbox-image[hidden],#photoLightbox .photo-lightbox-loading[hidden] {display:none !important}
+    #photoLightbox .photo-lightbox-close {position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:2;border:0;border-radius:50%;width:44px;height:44px;background:#fff;color:#142033;cursor:pointer;font-size:28px;line-height:1}
     #photoLightbox .photo-lightbox-loading {color:white;font:16px system-ui;text-align:center}
   </style>`);
-  document.body.insertAdjacentHTML('beforeend','<dialog id="photoLightbox" aria-label="Foto ampliada do material"><div class="photo-lightbox-body"><button type="button" id="closePhotoLightbox" class="photo-lightbox-close" aria-label="Fechar foto ampliada">×</button><span id="photoLightboxLoading" class="photo-lightbox-loading">Carregando foto…</span><img id="photoLightboxImage" class="photo-lightbox-image" alt="" hidden></div></dialog>');
+  document.body.insertAdjacentHTML('beforeend','<dialog id="photoLightbox" aria-label="Foto ampliada do material"><button type="button" id="closePhotoLightbox" class="photo-lightbox-close" aria-label="Fechar foto ampliada">×</button><span id="photoLightboxLoading" class="photo-lightbox-loading">Carregando foto…</span><img id="photoLightboxImage" class="photo-lightbox-image" alt="" hidden></dialog>');
 
 }
-function bind(){['connectBtn','welcomeConnect'].forEach(id=>$(id).onclick=connectGoogle);$('newBtn').onclick=()=>openForm();$('adminBtn').onclick=openAdmin;$('exportBtn').onclick=exportExcel;$('closeAdmin').onclick=()=>$('adminDialog').close();$('closeBtn').onclick=$('cancelBtn').onclick=closeForm;$('search').oninput=render;$('filter').onchange=render;$('categoryFilter').onchange=render;$('addRequestBtn').onclick=()=>addRequestRow();$('requestsList').onclick=e=>{const b=e.target.closest('[data-remove-request]');if(b)removeRequestRow(b.closest('.request-row'))};$('location').onchange=toggleOtherLocation;$('photo').onchange=handlePhoto;$('form').onsubmit=submitForm;$('deleteBtn').onclick=removeCurrent;$('closePhotoLightbox').onclick=()=>$('photoLightbox').close();$('photoLightbox').onclick=e=>{if(e.target===$('photoLightbox'))$('photoLightbox').close()}}
+function bind(){['connectBtn','welcomeConnect'].forEach(id=>$(id).onclick=connectGoogle);$('newBtn').onclick=()=>openForm();$('adminBtn').onclick=openAdmin;$('exportBtn').onclick=exportExcel;$('closeAdmin').onclick=()=>$('adminDialog').close();$('closeBtn').onclick=$('cancelBtn').onclick=closeForm;$('search').oninput=render;$('filter').onchange=render;$('categoryFilter').onchange=render;$('addRequestBtn').onclick=()=>addRequestRow();$('requestsList').onclick=e=>{const b=e.target.closest('[data-remove-request]');if(b)removeRequestRow(b.closest('.request-row'))};$('location').onchange=toggleOtherLocation;$('photo').onchange=handlePhoto;$('form').onsubmit=submitForm;$('deleteBtn').onclick=removeCurrent;$('closePhotoLightbox').onclick=closePhotoLightbox;$('photoLightbox').onclick=e=>{if(e.target===$('photoLightbox'))closePhotoLightbox()};document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('photoLightbox').open){e.preventDefault();closePhotoLightbox()}})}
 
 function connectGoogle(){if(!window.google?.accounts?.oauth2)return toast('O login Google ainda está carregando.');google.accounts.oauth2.initTokenClient({client_id:CONFIG.clientId,scope:CONFIG.scope,callback:async r=>{if(r.error)return toast('Não foi possível entrar com o Google.');try{const res=await fetch(CONFIG.api+'/session',{method:'POST',headers:{Authorization:'Bearer '+r.access_token}}),data=await res.json();if(!res.ok)throw new Error(data.error||'Não foi possível iniciar a sessão.');state.token=data.token;localStorage.setItem('materiais_session',state.token);await bootstrap()}catch(e){toast(e.message)}}}).requestAccessToken({prompt:''})}
 async function api(path,options={}){const res=await fetch(CONFIG.api+path,{...options,headers:{Authorization:'Bearer '+state.token,...(options.headers||{})}});const type=res.headers.get('content-type')||'';if(!res.ok){const data=type.includes('json')?await res.json().catch(()=>({})):{};if(res.status===401){state.token='';localStorage.removeItem('materiais_session');showLogin()}throw new Error(data.error||(res.status===401?'Sua sessão expirou. Entre novamente.':'Não foi possível concluir a operação.'))}return res}
@@ -54,7 +56,7 @@ function materialCategories(x){if(Array.isArray(x.categories)&&x.categories.leng
 function materialCategory(x){const categories=materialCategories(x);return categories.length?categories.map(category=>CATEGORY_LABELS[category]).join(', '):'Área não informada'}
 function materialRequests(x){return Array.isArray(x.requests)&&x.requests.length?x.requests:[{ncNumber:x.hasNc?(x.ncNumber||''):'',quantity:Number(x.quantity||1),responsible:x.responsible||''}]}
 function totalQuantity(x){return materialRequests(x).reduce((sum,r)=>sum+Number(r.quantity||0),0)}
-function render(){const q=$('search').value.trim().toLowerCase(),f=$('filter').value,categoryFilter=$('categoryFilter').value;const items=state.items.filter(x=>{const requests=materialRequests(x),categories=materialCategories(x),haystack=[x.name,x.description,materialCategory(x),materialLocation(x),x.shelfNumber,x.shelfLevel,x.updatedBy?.name,...requests.flatMap(r=>[r.ncNumber,r.responsible,r.quantity])].join(' ').toLowerCase(),hasNc=requests.some(r=>String(r.ncNumber||'').trim()),categoryMatches=categoryFilter==='all'||categories.includes(categoryFilter)||(categoryFilter==='uncategorized'&&!categories.length);return haystack.includes(q)&&categoryMatches&&(f==='all'||(f==='nc'&&hasNc)||(f==='no-nc'&&!hasNc))}).sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));$('summary').textContent=items.length===1?'1 material cadastrado':items.length+' materiais cadastrados';$('list').innerHTML=items.length?items.map(card).join(''):'<div class="empty"><strong>Nenhum material encontrado</strong><p>Cadastre um item ou altere a busca.</p></div>';items.forEach(loadCardPhoto)}
+function render(){const q=$('search').value.trim().toLowerCase(),f=$('filter').value,categoryFilter=$('categoryFilter').value;const items=state.items.filter(x=>{const requests=materialRequests(x),categories=materialCategories(x),haystack=[x.name,x.description,materialCategory(x),materialLocation(x),x.shelfNumber,x.shelfLevel,x.updatedBy?.name,...requests.flatMap(r=>[r.ncNumber,r.responsible,r.quantity])].join(' ').toLowerCase(),hasNc=requests.some(r=>String(r.ncNumber||'').trim()),categoryMatches=categoryFilter==='all'||categories.includes(categoryFilter)||(categoryFilter==='uncategorized'&&!categories.length);return haystack.includes(q)&&categoryMatches&&(f==='all'||(f==='nc'&&hasNc)||(f==='no-nc'&&!hasNc))}).sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));$('summary').textContent=items.length===1?'1 material cadastrado':items.length+' materiais cadastrados';$('list').innerHTML=items.length?items.map(card).join(''):'<div class="empty"><strong>Nenhum material encontrado</strong><p>Cadastre um item ou altere a busca.</p></div>';items.forEach(loadCardPhoto);document.querySelectorAll('.card .photo img').forEach(img=>{img.tabIndex=0;img.setAttribute('role','button');img.setAttribute('aria-label','Ampliar '+img.alt)})}
 function card(x){const requests=materialRequests(x),categories=materialCategories(x);return `<article class="card" data-id="${esc(x.id)}"><div class="photo">${x.photoId?`<img data-photo="${esc(x.photoId)}" alt="Foto de ${esc(x.name)}" role="button" tabindex="0" aria-label="Ampliar foto de ${esc(x.name)}">`:'Foto'}</div><div class="content"><h2 class="title">${esc(x.name)}</h2><p class="desc">${esc(x.description)}</p><div class="meta">${categories.length?categories.map(category=>`<span class="chip category ${esc(category)}"><i></i>${esc(CATEGORY_LABELS[category])}</span>`).join(''):'<span class="chip category uncategorized">Área não informada</span>'}<span class="chip">Qtd. total ${esc(totalQuantity(x))}</span><span class="chip location">${esc(materialLocation(x))}</span>${x.shelfNumber?`<span class="chip">Estante ${esc(x.shelfNumber)}</span>`:''}${x.shelfLevel?`<span class="chip">Prateleira ${esc(x.shelfLevel)}</span>`:''}</div><div class="request-summary">${requests.map((r,i)=>`<span><b>Pedido ${i+1}:</b> ${r.ncNumber?`NC ${esc(r.ncNumber)}`:'Sem NC'} · Qtd. ${esc(r.quantity||0)}${r.responsible?` · ${esc(r.responsible)}`:''}</span>`).join('')}</div><small style="color:var(--muted);margin-top:9px">Alterado por ${esc(x.updatedBy?.name||'—')}</small></div></article>`}
 async function loadCardPhoto(x){if(!x.photoId)return;try{const img=document.querySelector(`[data-photo="${CSS.escape(x.photoId)}"]`);if(img)img.src=await getPhotoUrl(x.photoId)}catch{}}
 async function getPhotoUrl(id){if(state.photoUrls.has(id))return state.photoUrls.get(id);const blob=await(await api('/photos/'+encodeURIComponent(id))).blob();const url=URL.createObjectURL(blob);state.photoUrls.set(id,url);return url}
@@ -72,24 +74,33 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+function closePhotoLightbox(){
+  const dialog=$('photoLightbox');
+  if(dialog.open)dialog.close();
+  document.body.style.overflow=photoLightboxPreviousOverflow;
+}
+let photoLightboxPreviousOverflow='';
 async function openPhotoLightbox(sourceImg){
-  const dialog=$('photoLightbox'), image=$('photoLightboxImage'), loading=$('photoLightboxLoading');
-  if(!dialog||!sourceImg)return;
-  const photoId=sourceImg.dataset.photo || (sourceImg.closest('#preview')?state.editing?.photoId:'');
+  if(state.user?.status!=='approved'||!sourceImg)return;
+  const box=$('photoLightbox'),image=$('photoLightboxImage'),loading=$('photoLightboxLoading');
+  const photoId=sourceImg.dataset.photo||(sourceImg.closest('#preview')?state.editing?.photoId:'');
   image.hidden=true;image.removeAttribute('src');loading.hidden=false;
   loading.textContent='Carregando foto…';
-  if(!dialog.open)dialog.showModal();
+  photoLightboxPreviousOverflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  if(!box.open)box.showModal();
+  $('closePhotoLightbox').focus();
   try{
     const url=sourceImg.closest('#preview')&&state.previewUrl?state.previewUrl:
       photoId?await getPhotoUrl(photoId):sourceImg.currentSrc||sourceImg.src;
-    if(!dialog.open)return;
+    if(!box.open)return;
     if(!url)throw new Error('Foto indisponível.');
-    image.onload=()=>{if(dialog.open){image.hidden=false;loading.hidden=true}};
-    image.onerror=()=>{if(dialog.open){loading.textContent='Não foi possível exibir a foto.'}};
+    image.onload=()=>{if(box.open){image.hidden=false;loading.hidden=true}};
+    image.onerror=()=>{if(box.open)loading.textContent='Não foi possível exibir a foto.'};
     image.alt=sourceImg.alt||'Foto ampliada do material';
     image.src=url;
     if(image.complete&&image.naturalWidth){image.hidden=false;loading.hidden=true}
-  }catch(e){if(dialog.open)loading.textContent=e.message||'Não foi possível carregar a foto.'}
+  }catch(e){if(box.open)loading.textContent=e.message||'Não foi possível carregar a foto.'}
 }
 
 
